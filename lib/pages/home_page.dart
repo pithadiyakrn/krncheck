@@ -175,6 +175,9 @@
 //
 import 'package:flutter/material.dart';
 import 'package:krncheck/pages/search_page.dart';
+import 'package:velocity_x/velocity_x.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+
 
 void main() {
   runApp(MyApp());
@@ -193,6 +196,9 @@ class MyApp extends StatelessWidget {
   }
 }
 
+
+
+
 class HomePage extends StatelessWidget {
   // GlobalKey for controlling the drawer
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
@@ -202,7 +208,6 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-
         leading: IconButton(
           icon: Icon(Icons.menu),
           onPressed: () {
@@ -259,76 +264,238 @@ class HomePage extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GestureDetector(
-              onTap: () {
-                // Navigate to search page when container is tapped
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SearchPage()),
-                );
-              },
-              child: Container(
-                padding: EdgeInsets.all(20.0),
-                color: Colors.white,
-                child: Row(
-                  children: [
-                    Icon(Icons.search),
-                    SizedBox(width: 10),
-                    Text(
-                      'Serch By Category,products & more...',
-                      style: TextStyle(fontSize: 12.0),
+        child: VStack([
+          GestureDetector(
+            onTap: () {
+              // Navigate to search page when container is tapped
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SearchPage()),
+              );
+            },
+            child: Container(
+              padding: EdgeInsets.all(20.0),
+              color: Colors.white,
+              child: HStack([
+                Icon(Icons.search),
+                SizedBox(width: 10),
+                'Search By Category, products & more...'
+                    .text
+                    .size(12)
+                    .make(),
+              ]),
+            ),
+          ),//serch textbox
+          // Container(
+          //   padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+          //   color: Colors.white,
+          //   child: HStack([
+          //     'Top Categories'.text.size(18).make(),
+          //     Spacer(),
+          //     TextButton(
+          //       onPressed: () {
+          //         // Handle view all action
+          //       },
+          //       child: 'View All'.text.size(16).make(),
+          //     ),
+          //   ]),
+          // ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+            // color: Colors.red,
+            height: 50,
+            child: HStack([
+              'Trending Now'.text.size(18).make(),
+              Spacer(),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.0),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Colors.purpleAccent, Colors.deepPurple],
+                  ),
+                ),
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Handle view all action
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.transparent,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
                     ),
-                  ],
+                  ),
+                  child: Text(
+                    'View All',
+                    style: TextStyle(fontSize: 15, color: Colors.white),
+                  ),
                 ),
               ),
+            ]),
+          ), //top categoris caitainer
+          Container(
+            margin: EdgeInsets.symmetric(vertical: 10.0),
+            color: Colors.white,
+            child: HStack([
+              // Add your image and name widgets here
+              ImageAndNameWidget(image: 'image1.jpg', name: 'Item 1'),
+              SizedBox(width: 20.0),
+              ImageAndNameWidget(image: 'image2.jpg', name: 'Item 2'),
+              SizedBox(width: 20.0),
+              ImageAndNameWidget(image: 'image3.jpg', name: 'Item 3'),
+              // Add more ImageAndNameWidget as needed
+            ]).scrollHorizontal().wFull(context),
+          ),//categori to get api now static roundedview name and photos
+          Container(
+            margin: EdgeInsets.symmetric(vertical: 10.0),
+            color: Colors.white,
+            child: CarouselSlider(
+              options: CarouselOptions(
+                height: 150.0,
+                enlargeCenterPage: true,
+                autoPlay: true,
+                aspectRatio: 16 / 9,
+                autoPlayCurve: Curves.fastOutSlowIn,
+                enableInfiniteScroll: true,
+                autoPlayAnimationDuration: Duration(milliseconds: 800),
+                viewportFraction: 1.0,
+              ),
+              items: [
+
+                'assets/image1.jpg', // Image path
+                'assets/image2.jpg', // Image path
+                'assets/image3.jpg', // Image path
+              ].map((item) {
+                return Builder(
+                  builder: (BuildContext context) {
+                    // Check if image exists
+                    if (item != null && AssetImage(item).assetName != null) {
+                      return Image.asset(
+                        item,
+                        fit: BoxFit.cover,
+                      );
+                    } else {
+                      // Display colored container based on image index
+                      Color color;
+                      if (item == 'assets/image1.jpg') {
+                        color = Colors.red;
+                      } else if (item == 'assets/image2.jpg') {
+                        color = Colors.pink;
+                      } else if (item == 'assets/image3.jpg') {
+                        color = Colors.blue;
+                      }
+                      return Container(
+                        color: Colors.black,
+                      );
+                    }
+                  },
+                );
+              }).toList(),
             ),
-            // Container for top categories and View All button
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-              color: Colors.grey[200],
+          ),//image slider
+          Container(
+            // padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+            color: Colors.white,
+            child: Center(
+              child: HStack([
+                'All Iconic Collections'.text.size(18).center.make(),
+              ]),
+            ),
+          ),//all iconic collections caitainer
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 10.0),
+            child: HStack(
+              [
+                ImageAndNameWidgetSquare(
+                    image: 'images/photo.jpg', name: 'Item 1'),
+                SizedBox(width: 20.0),
+                ImageAndNameWidgetSquare(
+                    image: 'images/photo.jpg', name: 'Item 2'),
+                SizedBox(width: 20.0),
+                ImageAndNameWidgetSquare(
+                    image: 'image3.jpg', name: 'Item 3'),
+                ImageAndNameWidgetSquare(
+                    image: 'image3.jpg', name: 'Item 3'),
+                ImageAndNameWidgetSquare(
+                    image: 'image3.jpg', name: 'Item 3'),
+                ImageAndNameWidgetSquare(
+                    image: 'image3.jpg', name: 'Item 3'),
+                ImageAndNameWidgetSquare(
+                    image: 'image3.jpg', name: 'Item 3'),
+              ],
+            ).scrollHorizontal().wFull(context),
+          ),//all iconic collections data
+          Container(
+            // padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+            color: Colors.white,
+            child: HStack([
+              'Featured'.text.size(18).bold.make(),
+            ]),
+          ),//Featured caitainer
+          // Inside the SingleChildScrollView, in the body of HomePage widget
+          Container(
+            margin: EdgeInsets.symmetric(vertical: 10.0),
+            color: Colors.white,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Top Categories',
-                    style: TextStyle(fontSize: 18.0),
+                  ImageAndNameinsidephoto(image: 'images/photo.jpg', name: 'Customize Jewellery', gradientColors: [Colors.deepPurpleAccent.withOpacity(0.5), Colors.pinkAccent],),
+                  SizedBox(width: 20.0),
+                  ImageAndNameinsidephoto(image: 'images/photo.jpg', name: 'Top Products', gradientColors: [Colors.deepOrange.withOpacity(0.5), Colors.amber],),
+                  SizedBox(width: 20.0),
+                  ImageAndNameinsidephoto(image: 'images/photo.jpg', name: 'Find A Store \nNear You', gradientColors: [Colors.deepPurple.withOpacity(0.5), Colors.black],),
+                  // Add more ImageAndNameinsidephoto widgets as needed
+                ],
+              ),
+            ),
+          ),//custom jewwelry etc caitainer
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+            // color: Colors.red,
+            height: 50,
+            child: HStack([
+              'Trending Now'.text.size(18).make(),
+              Spacer(),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.0),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Colors.pinkAccent, Colors.deepPurple],
                   ),
-                  TextButton(
-                    onPressed: () {
-                      // Handle view all action
-                    },
-                    child: Text(
-                      'View All',
-                      style: TextStyle(fontSize: 16.0),
+                ),
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Handle view all action
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.transparent,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
                     ),
                   ),
-                ],
+                  child: Text(
+                    'View All',
+                    style: TextStyle(fontSize: 15, color: Colors.white),
+                  ),
+                ),
               ),
-            ),
-            // Row displaying images and names horizontally
-            Container(
-              margin: EdgeInsets.symmetric(vertical: 20.0),
-              height: 100.0,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  // Add your image and name widgets here
-                  ImageAndNameWidget(image: 'image1.jpg', name: 'Item 1'),
-                  ImageAndNameWidget(image: 'image2.jpg', name: 'Item 2'),
-                  ImageAndNameWidget(image: 'image3.jpg', name: 'Item 3'),
-                  // Add more ImageAndNameWidget as needed
-                ],
-              ),
-            ),
-          ],
+            ]),
+          ),//trending now Coitainer
+
+
+        ],
         ),
       ),
     );
   }
 }
+
 
 class ImageAndNameWidget extends StatelessWidget {
   final String image;
@@ -344,27 +511,129 @@ class ImageAndNameWidget extends StatelessWidget {
     return Column(
       children: [
         CircleAvatar(
-          radius: 30.0,
+          radius: 40.0,
           backgroundImage: AssetImage('assets/$image'),
         ),
         SizedBox(height: 8.0),
-        Text(name),
+        Text(
+          name,
+          textAlign: TextAlign.center,
+        ),
       ],
     );
   }
 }
+class ImageAndNameWidgetSquare extends StatelessWidget {
+  final String image;
+  final String name;
 
-class SearchPage extends StatelessWidget {
+  const ImageAndNameWidgetSquare({
+    required this.image,
+    required this.name,
+  });
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Search Page'),
-      ),
-      body: Center(
-        child: Text(
-          'Search Page Content',
-          style: TextStyle(fontSize: 20.0),
+    return Column(
+      children: [
+        SizedBox(
+          height: 250.0,
+          child: Stack(
+            children: [
+              Container(
+                width: 170.0,
+                height: 250.0,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.0),
+                  image: DecorationImage(
+                    image: AssetImage('assets/$image'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(20.0),
+                      bottomRight: Radius.circular(20.0),
+                    ),
+                    color: Colors.deepPurpleAccent.withOpacity(0.5), // Background color with opacity
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 10.0),
+                  child: Center(
+                    child: Text(
+                      name,
+                      style: TextStyle(
+                        color: Colors.white, // Text color
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+class ImageAndNameinsidephoto extends StatelessWidget {
+  final String image;
+  final String name;
+  final List<Color> gradientColors; // Add this line
+
+  const ImageAndNameinsidephoto({
+    required this.image,
+    required this.name,
+    required this.gradientColors, // Add this line
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 200.0, // Adjust the width as needed
+      height: 200.0, // Adjust the height as needed
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20.0),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: gradientColors, // Use the provided gradient colors
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: 120.0, // Width of the photo
+                height: 120.0, // Height of the photo
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20.0),
+                  child: Image.asset(
+                    'assets/$image',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 10.0), // Adjust the spacing between the photo and the text
+            Text(
+              name,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 15.0,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );
